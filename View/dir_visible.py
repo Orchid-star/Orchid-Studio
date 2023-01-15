@@ -11,12 +11,12 @@ class CDirVisible(CModuleBase):
 
     def _create_widget(self):
         self._widget = QPlainTextEdit()
+        self._widget.setReadOnly(True)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    c_wg = CDirVisible()
     multi_module_view = CMultiModuleView()
-    multi_module_view.add_widget(c_wg)
+    multi_module_view.add_widget(CDirVisible())
     multi_module_view.show()
     sys.exit(app.exec_())
