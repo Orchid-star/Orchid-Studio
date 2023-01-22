@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets, QtCore
+from abc import ABC, abstractmethod
 
 
 class CModuleBase(QtCore.QObject):
@@ -6,19 +7,24 @@ class CModuleBase(QtCore.QObject):
 
     def __init__(self, parent=None):
         super(CModuleBase, self).__init__(parent)
-        self._switch_widget = QtWidgets.QPushButton()
-        self._widget = None
+        self._name_btn = QtWidgets.QPushButton()
+        self._name_btn.clicked.connect(lambda: self.signal_activated.emit(self._widget))
+        self._name_btn.setText(self.module_name())
+        self._widget = self.create_widget()
 
-    def switch_widget(self):
-        self._switch_widget.clicked.connect(lambda: self.signal_activated.emit(self._widget))
-        return self._switch_widget
+    def name_btn(self):
+        return self._name_btn
 
     def main_widget(self):
         return self._widget
 
-    def _create_widget(self):
+    # @abstractmethod
+    def create_widget(self):
         pass
 
+    def module_name(self):
+        return ''
+    
 
 class CMultiModuleView(QtWidgets.QWidget):
     widget_size = QtCore.QSize(1350, 900)
@@ -39,6 +45,6 @@ class CMultiModuleView(QtWidgets.QWidget):
 
     def add_widget(self, module):
         index = self._switch_layout.count()
-        self._switch_layout.insertWidget(index - 1, module.switch_widget())
+        self._switch_layout.insertWidget(index - 1, module.name_btn())
         self._stacked_widget.addWidget(module.main_widget())
         module.signal_activated.connect(self._stacked_widget.setCurrentWidget)
