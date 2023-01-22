@@ -1,12 +1,16 @@
 from module_view import CModuleBase, CMultiModuleView
 from PyQt5 import QtWidgets
 import sys
+import os
 
 
 class CDirVisible(CModuleBase):
+    BLANKS_NUM = 6
+
     def __init__(self, parent=None):
         self.dir_edit = None
         self.info_plain = None
+        self.list_info = ''
         super(CDirVisible, self).__init__(parent)
 
     def create_widget(self):
@@ -39,8 +43,24 @@ class CDirVisible(CModuleBase):
         pass
 
     def show_dir(self):
-        print('show dir')
-        pass
+        root = self.dir_edit.text()
+        self.list_dir(root)
+        self.info_plain.setPlainText(self.list_info)
+
+    def list_dir(self, root, level=0):
+        for path, dirs, files in os.walk(root):
+            if level == 0:
+                self.list_info = (' ' * self.BLANKS_NUM * level + path + '\n')
+                # print('    ' * level + path)
+            for file in files:
+                self.list_info += (' ' * self.BLANKS_NUM * level + '  |___' + file + '\n')
+                # print('    ' * level + '  |___' + file)
+            for sub_dir in dirs:
+                self.list_info += (' ' * self.BLANKS_NUM * level + '  |___' + sub_dir + '\n')
+                # print('    ' * level + '  |___' + sub_dir)
+                if sub_dir[0] != '.':
+                    self.list_dir(os.path.join(path, sub_dir), level + 1)
+            break
 
 
 if __name__ == "__main__":
